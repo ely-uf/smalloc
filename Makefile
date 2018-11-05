@@ -5,7 +5,8 @@ endif
 NAME = libft_malloc_$(HOSTTYPE).so
 CONST_NAME = libft_malloc.so
 SRC = malloc.c realloc.c free.c malloc_zone.c malloc_region.c \
-	malloc_region_gc.c malloc_region_magic.c malloc_metadata.c
+	malloc_region_gc.c malloc_region_magic.c malloc_metadata.c\
+	malloc_allocation.c
 OBJ = $(SRC:.c=.o)
 CFLAGS = -fPIC -Wall -Werror -Wextra
 CC = gcc

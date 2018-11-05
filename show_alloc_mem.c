@@ -15,10 +15,13 @@ void	print_zones(t_malloc_zone *zone, char *zone_type)
 		region = zone->regions;
 		while (region)
 		{
-			region_mem = (char*)(region + 1);
-			printf("%#X - %#X : %u %s\n", region_mem,
-					region_mem + region->size, region->size,
-					region->size == 1 ? "byte" : "bytes");
+			if (!region->free)
+			{
+				region_mem = (char*)(region + 1);
+				printf("%p - %p : %zu %s\n", region_mem,
+						region_mem + region->size, region->size,
+						region->size == 1 ? "byte" : "bytes");
+			}
 			region = region->next;
 		}
 		zone = zone->next_zone;
