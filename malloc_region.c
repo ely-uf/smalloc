@@ -26,6 +26,43 @@ t_region_err		malloc_region_free(t_region *region)
 	return (R_SUCCESS);
 }
 
+t_region_err		malloc_region_can_claim(t_region *region, size_t size)
+{
+	if (!malloc_region_valid(region))
+		return (R_REGION_INVALID);
+	if (!region->free)
+		return (R_REGION_CLAIMED);
+	if (region->size < size)
+		return (R_NOT_ENOUGH_SIZE);
+	return (R_SUCCESS);
+}
+
+t_region_err		malloc_region_claim(t_region *region, size_t size)
+{
+	t_region		*region_after;
+	size_t			size_left;
+	t_region_err	claim_res;
+	size_t			aligned_size;
+
+	aligned_size = ALIGN_SIZE(size);
+	claim_res = malloc_region_can_claim(region, size);
+	if (claim_res != R_SUCCESS)
+		return (claim_res);
+	region->used_size = size;
+	region->free = 0;
+	size_left = region->size - aligned_size;
+	if (size_left > sizeof(t_region))
+	{
+		region->size = aligned_size;
+		region_after = (t_region*)((char*)(region + 1) + region->size);
+		malloc_region_init(region_after, size_left - sizeof(t_region));
+		region_after->next = region->next;
+		region_after->prev = region;
+		region->next = region_after;
+	}
+	return (R_SUCCESS);
+}
+
 t_region_err		malloc_region_can_extend(t_region *region, size_t pref_sz)
 {
 	if (!malloc_region_valid(region))

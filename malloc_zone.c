@@ -14,16 +14,21 @@ t_malloc_zone	*malloc_alloc_zone(size_t num_regions, size_t region_size)
 	min_size = num_regions * (region_size + sizeof(t_region)) +
 		sizeof(t_malloc_zone);
 	actual_size = page_size;
+	/*
+	 *	XXX: Fix me :)
+	 */
 	while (actual_size < min_size)
 		actual_size += page_size;
 	new_zone = mmap(NULL, actual_size, PROT_ALL, MAP_ANON | MAP_PRIVATE, -1, 0);
 	if (new_zone == MAP_FAILED)
 		return (NULL);
 	new_zone->regions = (t_region *)(new_zone + 1);
-	malloc_region_init(new_zone->regions, actual_size - sizeof(t_malloc_zone));
+	malloc_region_init(new_zone->regions, actual_size -
+			sizeof(t_malloc_zone) - sizeof(t_region));
 	new_zone->size = actual_size;
 	new_zone->num_regions = actual_size / region_size;
 	new_zone->region_size = region_size;
+	new_zone->next_zone = NULL;
 	return (new_zone);
 }
 
@@ -40,6 +45,13 @@ t_malloc_zone	*malloc_alloc_zone_of_type(t_zone_type type, size_t size)
 	if (zone)
 		zone->type = type;
 	return (zone);
+}
+
+int				malloc_zone_can_dealloc(t_malloc_zone *zone)
+{
+	return (zone->regions->free &&
+			zone->regions->age == 0 &&
+			zone->regions->next == NULL);
 }
 
 void			malloc_dealloc_zone(t_malloc_zone **zone_)

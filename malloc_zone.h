@@ -7,7 +7,7 @@
 
 # define TINY_REGION_MAX_SIZE	128
 # define SMALL_REGION_MAX_SIZE	2048
-# define MIN_REGS_IN_TS_ZONES	1024
+# define MIN_REGS_IN_TS_ZONES	32
 # define DEFAULT_ZONE_SIZE	(-1)
 
 # define PROT_ALL (PROT_READ | PROT_WRITE | PROT_EXEC)
@@ -30,6 +30,7 @@ typedef struct	s_malloc_zone
 }				t_malloc_zone;
 
 t_malloc_zone	*malloc_alloc_zone_of_type(t_zone_type type, size_t size);
+int				malloc_zone_can_dealloc(t_malloc_zone *zone);
 void			malloc_dealloc_zone(t_malloc_zone **zone);
 
 #endif

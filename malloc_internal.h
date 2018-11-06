@@ -17,4 +17,8 @@ typedef struct	s_malloc_mdata
 t_malloc_mdata	*get_malloc_mdata(void);
 void			*malloc_alloc_region(size_t size);
 
+t_region_err	malloc_region_gc_run(void);
+
+void			malloc_validity_report(void);
+
 #endif
