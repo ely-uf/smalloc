@@ -31,6 +31,6 @@ typedef struct	s_malloc_zone
 
 t_malloc_zone	*malloc_alloc_zone_of_type(t_zone_type type, size_t size);
 int				malloc_zone_can_dealloc(t_malloc_zone *zone);
-void			malloc_dealloc_zone(t_malloc_zone **zone);
+void			malloc_dealloc_zone(t_malloc_zone *zone);
 
 #endif

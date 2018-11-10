@@ -1,6 +1,5 @@
 #include "malloc_zone.h"
-
-#include <assert.h>
+#include "malloc_internal.h"
 
 t_malloc_zone	*malloc_alloc_zone(size_t num_regions, size_t region_size)
 {
@@ -14,11 +13,7 @@ t_malloc_zone	*malloc_alloc_zone(size_t num_regions, size_t region_size)
 	min_size = num_regions * (region_size + sizeof(t_region)) +
 		sizeof(t_malloc_zone);
 	actual_size = page_size;
-	/*
-	 *	XXX: Fix me :)
-	 */
-	while (actual_size < min_size)
-		actual_size += page_size;
+	actual_size = ROUND_TO(min_size, page_size);
 	new_zone = mmap(NULL, actual_size, PROT_ALL, MAP_ANON | MAP_PRIVATE, -1, 0);
 	if (new_zone == MAP_FAILED)
 		return (NULL);
@@ -54,18 +49,18 @@ int				malloc_zone_can_dealloc(t_malloc_zone *zone)
 			zone->regions->next == NULL);
 }
 
-void			malloc_dealloc_zone(t_malloc_zone **zone_)
+void			malloc_dealloc_zone(t_malloc_zone *zone)
 {
+#if 0
 	t_region		*region;
-	t_malloc_zone	*zone;
 
-	zone = *zone_;
 	region = zone->regions;
 	while (region)
 	{
 		assert(region->free);
+		assert(region->age == 0);
 		region = region->next;
 	}
+#endif
 	munmap(zone, zone->size);
-	*zone_ = NULL;
 }

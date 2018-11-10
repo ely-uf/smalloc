@@ -2,29 +2,26 @@
 #include "malloc_internal.h"
 # include <assert.h>
 
-static inline void	malloc_region_gc_collect(t_region **region, t_region *prev)
+static inline void	malloc_region_gc_collect(t_region *region)
 {
-	if ((*region)->age)
+	if (region->age)
 	{
-		(*region)->age--;
+		region->age--;
 		return ;
 	}
-	malloc_region_destroy(*region);
-	*region = prev;
+	malloc_region_destroy(region);
 }
 
 t_region_err		malloc_region_gc_regions(t_region *region)
 {
-	t_region	*prev;
+	t_region	*next;
 
-	prev = region;
 	while (region)
 	{
+		next = region->next;
 		if (region->free)
-			malloc_region_gc_collect(&region, prev);
-		else
-			prev = region;
-		region = region->next;
+			malloc_region_gc_collect(region);
+		region = next;
 	}
 	return (R_SUCCESS);
 }
@@ -46,7 +43,7 @@ t_region_err		malloc_region_gc_zone_cleanup(t_malloc_zone **zone_)
 				*zone_ = (*zone_)->next_zone;
 			else
 				prev->next_zone = next;
-			malloc_dealloc_zone(&zone);
+			malloc_dealloc_zone(zone);
 		}
 		else
 		{
@@ -72,7 +69,10 @@ t_region_err		malloc_region_gc_zone_list(t_malloc_zone **zone_,
 	}
 	malloc_region_gc_zone_cleanup(&(*zone_)->next_zone);
 	if (destroy_first && malloc_zone_can_dealloc(*zone_))
-		malloc_dealloc_zone(zone_);
+	{
+		malloc_dealloc_zone(*zone_);
+		*zone_ = NULL;
+	}
 	return (R_SUCCESS);
 }
 

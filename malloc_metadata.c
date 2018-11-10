@@ -10,7 +10,8 @@ static int						malloc_mdata_initialize(t_malloc_mdata *md)
 	if (!(md->small_zones = malloc_alloc_zone_of_type(Z_SMALL,
 					DEFAULT_ZONE_SIZE)))
 	{
-		malloc_dealloc_zone(&md->tiny_zones);
+		malloc_dealloc_zone(md->tiny_zones);
+		md->tiny_zones = NULL;
 		return (1);
 	}
 	md->initialized = 1;

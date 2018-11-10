@@ -8,7 +8,8 @@
 # define MAGIC_START(addr_) (((addr_) & 0xFFFF) ^ MAGIC_START_XOR_MASK)
 # define MAGIC_END(addr_) (((addr_) >> 48) ^ MAGIC_END_XOR_MASK)
 # define FREE_REGION_AGE	5
-# define ALIGN_SIZE(sz_) ((sz_) % 4 ? (sz_) + (4 - (sz_ % 4)) : (sz_))
+# define ROUND_TO(n_, r_) ((n_) % (r_) ? (n_) + ((r_) - ((n_) % (r_))) : (n_))
+# define ALIGN_SIZE(sz_) ROUND_TO((sz_), 4)
 
 typedef enum	e_region_err
 {
@@ -36,6 +37,7 @@ int				malloc_region_magic_valid(t_region *region);
 t_region_err	malloc_region_init(t_region	*region, size_t size);
 t_region_err	malloc_region_destroy(t_region *region);
 t_region_err	malloc_region_claim(t_region *region, size_t size);
+t_region_err	malloc_region_extend(t_region *region, size_t size);
 t_region_err	malloc_region_free(t_region *region);
 
 t_region_err	malloc_region_can_extend(t_region *region, size_t pref_sz);
