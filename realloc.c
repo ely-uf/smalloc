@@ -4,8 +4,9 @@
 
 void	*realloc(void *ptr, size_t size)
 {
-	t_region	*region;
-	void		*new_ptr;
+	t_region_err	ext_status;
+	t_region		*region;
+	void			*new_ptr;
 
 	if (!ptr)
 		return (malloc(size));
@@ -13,11 +14,14 @@ void	*realloc(void *ptr, size_t size)
 		return (NULL);
 	region = (t_region*)((char*)ptr - sizeof(t_region));
 
-	if (malloc_region_can_extend(region, size) == R_SUCCESS)
+	ext_status = malloc_region_can_extend(region, size);
+	if (ext_status == R_SUCCESS)
 	{
 		malloc_region_extend(region, size);
 		return ((void*)(region + 1));
 	}
+	else if (ext_status == R_REGION_INVALID)
+		return (NULL);
 
 	new_ptr = malloc(size);
 	if (!new_ptr)
