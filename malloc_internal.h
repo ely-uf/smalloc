@@ -2,6 +2,7 @@
 # define __FT_MALLOC_INTERNAL_H
 
 # include <pthread.h>
+# include <string.h>
 # include "ft_malloc.h"
 # include "malloc_zone.h"
 
